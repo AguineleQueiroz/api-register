@@ -1,9 +1,8 @@
 const express = require('express');
 const User = require('../models/User');
 const router = express.Router();
-const { validityIdMongoDbFormat } = require('../utils/utilities')
 
-router.get('/', async (request, response) => {  
+router.get('/list', async (request, response) => {  
     try {
         const users = await User.find();
         response.status(200).send(users);
@@ -12,7 +11,7 @@ router.get('/', async (request, response) => {
     }  
 })
 
-router.get('/:id', async (request, response) => {
+router.get('/search/:id', async (request, response) => {
     const id = request.params.id;
     try {
         const searchUser = await User.findById(id);
@@ -51,5 +50,42 @@ router.post('/register', async (request, response) => {
     }
 })
 
+router.patch('/update/:id', async (request, response) => {
+    const userID = request.params.id;
+    const { name, email, password } = request.body;
+
+    const userUpdated = {
+        name,
+        email,
+        password
+    };
+   
+    try { 
+        const isInvalidData = Object.values(userUpdated).some(value => value === '');
+        const existUser = await User.findOne({_id:userID})
+        if(isInvalidData && existUser) {
+            response.status(400).send({message: 'Invalid data received!'});
+            return;
+        }else if(!isInvalidData && existUser) {
+            await User.findByIdAndUpdate(userID, userUpdated);            
+            response.status(200).send({message: 'resource updated successfully!'});
+            return;
+        } else {
+            response.status(404).send({ message: 'User not found!'});   
+            return;
+        }
+        
+    } catch (error) {
+        response.status(500).send({ error: error })
+    }
+})
+
+router.delete('/delete/:id', async (request, response) => {
+    const userID = request.params.id;
+    const user = User.deleteOne({ _id: userID}, err => {
+        err ? response.status(400).send({ error: 'The user cannot be deleted.'}) 
+            : response.status(200).send({ message: 'Successfully deleted user.' });
+    });
+})
 
 module.exports = (app) => app.use('/users', router);
