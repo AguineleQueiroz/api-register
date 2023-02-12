@@ -5,7 +5,8 @@ const router = express.Router();
 router.get('/list', async (request, response) => {  
     try {
         const users = await User.find();
-        response.status(200).send(users);
+        users.length !== 0 ? response.status(200).send(users) 
+                            : response.status(404).send({ message: 'Empty user list.'});
     } catch (error) {
         response.status(500).send({ error: error })
     }  
@@ -74,7 +75,6 @@ router.patch('/update/:id', async (request, response) => {
             response.status(404).send({ message: 'User not found!'});   
             return;
         }
-        
     } catch (error) {
         response.status(500).send({ error: error })
     }
