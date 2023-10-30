@@ -1,6 +1,5 @@
 # api-register
-Uma API de registro de usuários desenvolvida com NodeJS + express + Mongoose. A API não conta apenas com as funcionalidades do  backend até o momento.
-
+Uma API de registro de usuários desenvolvida com NodeJS + express + Mongoose.
 ## Status
 [![Status Completo](https://img.shields.io/badge/STATUS-COMPLETO-green?style=for-the-badge)]()
 
